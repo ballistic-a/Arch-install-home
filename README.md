@@ -11,7 +11,7 @@ Portable Hyprland and Caelestia user settings, plus the steps to recreate this d
 3. Confirm installing `caelestia-cli`, review Caelestia's backup prompt and package confirmations, then review each shared settings change.
 4. Set up monitor layouts and GPU drivers for that PC using [per-machine notes](docs/per-machine.md).
 
-The setup command uses Caelestia's official CLI installer for its packages and upstream configuration, then runs this repo's settings installer. The settings installer backs up existing regular files under `~/.config-backups/arch-install-home/` before replacement. It skips symlinks and non-file destinations. The full setup does not choose GPU drivers or monitor outputs.
+The setup command uses Caelestia's official CLI installer for its packages and upstream configuration, offers HyprMod because two included settings belong to it, then runs this repo's settings installer. The settings installer backs up existing regular files under `~/.config-backups/arch-install-home/` before replacement. It skips symlink files, symlink parent directories, and non-file destinations. The full setup does not choose a login manager, GPU drivers, or monitor outputs.
 
 ## Repository map
 

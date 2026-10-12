@@ -26,12 +26,12 @@ elif command -v yay >/dev/null 2>&1; then
     aur_helper="yay"
 fi
 
-if ! command -v caelestia >/dev/null 2>&1; then
-    if [[ -z "$aur_helper" ]]; then
-        printf 'ERROR: Install an AUR helper (paru or yay), then rerun this script.\n' >&2
-        exit 1
-    fi
+if [[ -z "$aur_helper" ]]; then
+    printf 'ERROR: Install paru or yay first. Caelestia uses AUR packages during setup.\n' >&2
+    exit 1
+fi
 
+if ! command -v caelestia >/dev/null 2>&1; then
     printf 'Caelestia CLI is missing. It will be installed from the AUR with %s.\n' "$aur_helper"
     printf 'The AUR helper will show its package build and installation prompts.\n\n'
     answer=""
@@ -59,6 +59,17 @@ if [[ ! "$answer" =~ ^[Yy]([Ee][Ss])?$ ]]; then
 fi
 
 caelestia install
+
+if ! command -v hyprmod >/dev/null 2>&1; then
+    if [[ -n "$aur_helper" ]]; then
+        printf '\nThis repo includes two HyprMod settings files. HyprMod is a separate AUR application.\n\n'
+        answer=""
+        read -r -p "Install HyprMod with $aur_helper? [y/N] " answer
+        if [[ "$answer" =~ ^[Yy]([Ee][Ss])?$ ]]; then
+            "$aur_helper" -S --needed hyprmod
+        fi
+    fi
+fi
 
 printf '\nCaelestia finished. The repository settings installer will now show and ask about each shared preference.\n\n'
 bash "$repo_dir/install.sh" --apply

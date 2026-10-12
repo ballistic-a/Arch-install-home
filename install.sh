@@ -46,6 +46,18 @@ files=(
     "hypr/hyprmod/user_curves.json"
 )
 
+has_symlink_parent() {
+    local parent
+    parent="$(dirname -- "$1")"
+    while [[ "$parent" != "$HOME" && "$parent" != "/" ]]; do
+        if [[ -L "$parent" ]]; then
+            return 0
+        fi
+        parent="$(dirname -- "$parent")"
+    done
+    return 1
+}
+
 timestamp="$(date '+%Y-%m-%d_%H-%M-%S')-$$"
 backup_root="$HOME/.config-backups/arch-install-home/$timestamp"
 changed=0
@@ -63,6 +75,12 @@ done
 for relative_path in "${files[@]}"; do
     source_file="$repo_dir/config/$relative_path"
     destination="$HOME/.config/$relative_path"
+
+    if has_symlink_parent "$destination"; then
+        printf '[SKIP] A parent directory for %s is a symlink; will not write through it.\n' "$destination"
+        skipped=$((skipped + 1))
+        continue
+    fi
 
     if [[ -L "$destination" ]]; then
         printf '[SKIP] %s is a symlink; review its owner and target manually.\n' "$destination"
