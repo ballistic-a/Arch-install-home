@@ -23,4 +23,6 @@ Do not copy another PC's driver package as a shared requirement. For each PC:
 
 As of 2026-10-12, the ArchWiki lists the RTX 3070's Ampere family and RTX 4070's Ada family among the generations supported by `nvidia-open`; for the standard `linux` kernel it lists `nvidia-open`, and for other kernels it lists `nvidia-open-dkms`. The guide also notes an Ampere laptop caveat. Recheck the live guide when installing because package names and support can change. Do not pin a driver version in the shared package list.
 
+Steam also requires the 32-bit graphics driver that matches that PC's GPU. Choose it during Steam dependency installation; this repo does not pin a vendor-specific 32-bit driver. See the [ArchWiki Steam guide](https://wiki.archlinux.org/title/Steam) for current details.
+
 The old PC's package inventory and monitor settings live under the ignored `host-local/this-pc/` directory. Their presence there does not make them portable defaults.

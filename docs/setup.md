@@ -10,6 +10,22 @@ The setup script does not pass `--noconfirm`; review AUR build prompts and packa
 
 This wrapper does not configure the login manager, GPU driver, monitor outputs, or wallpaper. Make sure your Arch install script sets up a login manager or a way to start Hyprland from a TTY. Configure GPU and monitor choices for the PC separately.
 
+### Spotify and Spicetify
+
+The repo includes the current `text` theme and Marketplace custom app under `config/spicetify/`. After installing Spotify and opening it once to sign in, run `./setup-spicetify.sh` to preview the setup, then `./setup-spicetify.sh --apply` to install it. The apply step asks before changing anything, backs up existing theme, Marketplace, and Spicetify config files under `~/.config-backups/arch-install-home/`, configures the detected Spotify path, and runs `spicetify backup apply`. It detects `spotify-launcher` and the standard Arch `spotify` package. If Spicetify reports a permission error for a system package, grant access using Spicetify’s Linux setup guide; the repo script does not change system permissions. Restart Spotify afterward.
+
+The Spicetify CLI is installed separately as `spicetify-cli` from the AUR if it is missing; the script offers that package installation interactively. It does not install or switch Spotify packages. Caelestia's optional Spotify component installs the AUR `spotify` client, Spicetify, Marketplace, and Caelestia's own Spotify theme; skip that component if you want to keep `spotify-launcher` and use this repo's `text` theme. The Caelestia installer and this repo's Spicetify setup are separate choices.
+
+### EasyEffects
+
+The repo includes the current `Flat`, `Rock`, `Jazz`, `Pop`, and `Bass Boost` output presets under `config/easyeffects/`. During `./setup-caelestia.sh`, choose EasyEffects to install the Arch package if needed, review and copy the presets with backups, then preview and approve the Caelestia dashboard buttons. The buttons invoke `easyeffects --load-preset` for those names. You can run `./setup-easyeffects.sh` for a preview or `./setup-easyeffects.sh --apply` to install presets by itself; the dashboard update is `scripts/easyeffects-presets.sh`.
+
+Audio device routing and the current `easyeffectsrc` database stay per-PC because they name devices attached to the original computer. The shared presets contain the equalizer settings, without those device names.
+
+### Discord and Steam
+
+The main setup also offers Discord and Steam. Discord installs from the AUR through `paru` or `yay`; Steam installs from the official Arch repositories when `[multilib]` is enabled. The script checks what is already installed and asks before installing either package. Discord settings, account sessions, Steam credentials, library folders, and game data are deliberately excluded from the repo.
+
 ## 2. Apply shared user settings
 
 The setup wrapper runs this same settings installer after Caelestia succeeds. To review the settings without installing Caelestia, run:

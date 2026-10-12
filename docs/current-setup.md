@@ -2,6 +2,10 @@
 
 This inventory describes the original machine observed on 2026-10-12. It is a reference, not an automated setup recipe. Its package inventory is kept in the ignored `host-local/this-pc/` directory.
 
+## Application packages
+
+Discord and Steam were installed on the original PC. Their local account/session data and Steam library are not part of the shared setup; the installer offers the packages on a new Arch PC.
+
 ## Desktop configuration sources
 
 - `~/.config/hypr` and much of `~/.config/quickshell` are symlinked to `~/dotfiles/.config`.
@@ -18,7 +22,7 @@ Driver packages, GPU diagnostics, and initramfs details are machine-specific. Th
 ## Personal scripts
 
 - `scripts/check-updates.sh` checks official Arch, AUR, and Flatpak updates.
-- `scripts/easyeffects-presets.sh` edits the installed Caelestia media `Details.qml` after creating a timestamped backup. It depends on the upstream QML layout, so review its diff and backup before running it after an update.
+- `config/easyeffects/output/` now carries the five current output presets. `scripts/easyeffects-presets.sh` previews and asks before adding the preset buttons to Caelestia media `Details.qml`, with a timestamped backup. The device database and input/output device names stay local to each PC.
 - `~/create-eq-presets.sh` was excluded because the inspected file contains only a stray `i` and is not a usable script.
 
 ## Deliberately excluded
