@@ -115,4 +115,11 @@ if [[ "$answer" =~ ^[Yy]([Ee][Ss])?$ ]]; then
     bash "$repo_dir/setup-apps.sh" --apply
 fi
 
+printf '\nThe repo includes an optional WFHelper 2.1.1 AppImage downloader.\n'
+answer=""
+read -r -p 'Download WFHelper now? [y/N] ' answer
+if [[ "$answer" =~ ^[Yy]([Ee][Ss])?$ ]]; then
+    bash "$repo_dir/scripts/wfhelper-appimage.sh" --apply
+fi
+
 printf "\nSetup complete. Configure this PC's GPU driver and monitor layout using docs/per-machine.md.\n"

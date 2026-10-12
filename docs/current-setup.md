@@ -24,6 +24,7 @@ Driver packages, GPU diagnostics, and initramfs details are machine-specific. Th
 - `scripts/check-updates.sh` checks official Arch, AUR, and Flatpak updates.
 - `config/easyeffects/output/` now carries the five current output presets. `scripts/easyeffects-presets.sh` previews and asks before adding the preset buttons to Caelestia media `Details.qml`, with a timestamped backup. The device database and input/output device names stay local to each PC.
 - `~/create-eq-presets.sh` was excluded because the inspected file contains only a stray `i` and is not a usable script.
+- WFHelper 2.1.1 is an optional AppImage download; the repo downloads it only when selected and prints the `--appimage-extract` command.
 
 ## Deliberately excluded
 

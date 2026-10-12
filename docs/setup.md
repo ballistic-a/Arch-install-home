@@ -26,6 +26,15 @@ Audio device routing and the current `easyeffectsrc` database stay per-PC becaus
 
 The main setup also offers Discord and Steam. Discord installs from the AUR through `paru` or `yay`; Steam installs from the official Arch repositories when `[multilib]` is enabled. The script checks what is already installed and asks before installing either package. Discord settings, account sessions, Steam credentials, library folders, and game data are deliberately excluded from the repo.
 
+### WFHelper AppImage
+
+The main setup optionally downloads the pinned WFHelper 2.1.1 AppImage into `~/Applications/WFHelper-2.1.1.AppImage`; the standalone script is `scripts/wfhelper-appimage.sh`. It downloads but does not run the app. To extract it, run:
+
+```sh
+cd ~/Applications
+./WFHelper-2.1.1.AppImage --appimage-extract
+```
+
 ## 2. Apply shared user settings
 
 The setup wrapper runs this same settings installer after Caelestia succeeds. To review the settings without installing Caelestia, run:
