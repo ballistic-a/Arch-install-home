@@ -1,0 +1,24 @@
+{
+    "appearance": {
+        "transparency": {
+            "enabled": true
+        }
+    },
+    "background": {
+        "wallpaperEnabled": true
+    },
+    "general": {
+        "apps": {
+            "terminal": [
+                "kitty"
+            ]
+        }
+    },
+    "services": {
+        "audioIncrement": 0.1,
+        "clockFormat": "TwentyFourHour",
+        "dataUnits": "Decimal",
+        "smartScheme": true,
+        "weatherUnits": "Celsius"
+    }
+}

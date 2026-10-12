@@ -1,0 +1,20 @@
+# Credentials and private keys
+.env
+.env.*
+**/secrets/
+**/credentials*
+**/*.pem
+**/*.key
+**/id_rsa*
+**/id_ed25519*
+**/id_ecdsa*
+**/id_dsa*
+.ssh/
+
+# Machine-local runtime and backup data
+host-local/
+**/state/
+**/*.bak
+**/*.backup
+**/*.bak-*
+
