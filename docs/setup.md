@@ -28,7 +28,7 @@ The main setup also offers Discord and Steam. Discord installs from the AUR thro
 
 ### WFHelper AppImage
 
-The main setup optionally downloads the pinned WFHelper 2.1.1 AppImage into `~/Applications/WFHelper-2.1.1.AppImage`; the standalone script is `scripts/wfhelper-appimage.sh`. It downloads but does not run the app. To extract it, run:
+The main setup optionally downloads the pinned WFHelper 2.1.1 AppImage into `~/Applications/WFHelper-2.1.1.AppImage`; the standalone script is `scripts/wfhelper-appimage.sh`. It downloads the AppImage, creates a WFHelper entry in the desktop application menu, and does not launch it automatically. You can open WFHelper from the menu without a terminal. WFHelper needs FUSE 2 (`libfuse.so.2`), provided on Arch by `fuse2`. The installer checks for this library and asks before installing it with `sudo pacman -Syu --needed fuse2` (which performs a full system update). To install it manually, use that command before running WFHelper. To extract the AppImage manually, run:
 
 ```sh
 cd ~/Applications
