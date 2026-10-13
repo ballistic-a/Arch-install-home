@@ -11,6 +11,7 @@ Discord and Steam were installed on the original PC. Their local account/session
 - `~/.config/hypr` and much of `~/.config/quickshell` are symlinked to `~/dotfiles/.config`.
 - `~/dotfiles` is a separate 43PR/dotfiles checkout with local edits and an untracked Quickshell backup directory. Keep that checkout and its local changes intact while migrating.
 - Caelestia's upstream shell tree is `~/.config/quickshell/caelestia`; install and update it using current upstream guidance.
+- `scripts/install-caelestia-dashboard.sh` applies the reviewed dashboard/calendar changes to that upstream tree with timestamped backups; the repo does not replace the full shell source.
 - The user-owned Caelestia preferences are `~/.config/caelestia/shell.json` and `hypr-user.lua`; the latter is empty on the original PC. The shared profile adds the observed Swedish keyboard layout as a small user override.
 - `~/.config/hypr/hyprland-gui.lua` and `hyprmod/user_curves.json` contain user-level HyprMod settings.
 - The original PC's monitor files contained only `{}`. They are omitted; create local monitor settings on a PC only if it needs overrides.
@@ -23,6 +24,8 @@ Driver packages, GPU diagnostics, and initramfs details are machine-specific. Th
 
 - `scripts/check-updates.sh` checks official Arch, AUR, and Flatpak updates.
 - `config/easyeffects/output/` now carries the five current output presets. `scripts/easyeffects-presets.sh` previews and asks before adding the preset buttons to Caelestia media `Details.qml`, with a timestamped backup. The device database and input/output device names stay local to each PC.
+- The Caelestia Dashboard patch removes its resource strip, expands the calendar into the freed width, prevents selecting a date in the current month from animating the month, and highlights today's date.
+- The calendar can show Swedish statutory holidays, customary work-free eves, and observances with separate marker colors; a user timer can send the evening-before desktop reminder. Whether an eve is a day off depends on the workplace.
 - `~/create-eq-presets.sh` was excluded because the inspected file contains only a stray `i` and is not a usable script.
 - WFHelper 2.1.1 is an optional AppImage download; the repo downloads it only when selected and prints the `--appimage-extract` command.
 

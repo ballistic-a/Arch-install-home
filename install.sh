@@ -156,3 +156,13 @@ if [[ "$mode" == "plan" ]]; then
 else
     printf '\nFinished. Updated or created: %d; skipped: %d.\n' "$changed" "$skipped"
 fi
+
+if [[ "$mode" == "plan" ]]; then
+    bash "$repo_dir/scripts/install-wallpaper-selector.sh"
+    bash "$repo_dir/scripts/install-caelestia-dashboard.sh"
+    bash "$repo_dir/scripts/install-swedish-holidays.sh"
+else
+    bash "$repo_dir/scripts/install-wallpaper-selector.sh" --apply
+    bash "$repo_dir/scripts/install-caelestia-dashboard.sh" --apply
+    bash "$repo_dir/scripts/install-swedish-holidays.sh" --apply
+fi
