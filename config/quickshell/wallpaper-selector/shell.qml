@@ -1,5 +1,6 @@
 import Quickshell
 import Quickshell.Wayland
+import QtCore
 import QtQuick
 import Qt.labs.folderlistmodel
 
@@ -8,6 +9,13 @@ PanelWindow {
 
     property string wallpaperDir: Quickshell.env("HOME") + "/Pictures/Wallpapers"
     property real uiScale: Math.max(0.7, Math.min(1.25, Screen.height / 1080))
+    property real wheelRemainder: 0
+
+    Settings {
+        id: savedSettings
+        category: "wallpaper-selector"
+        property string lastWallpaperPath: ""
+    }
 
     implicitWidth: Screen.width
     implicitHeight: Screen.height
@@ -19,8 +27,38 @@ PanelWindow {
     function applyCurrent() {
         if (wallpapers.count < 1 || gallery.currentIndex < 0) return
         const path = wallpapers.get(gallery.currentIndex, "filePath")
+        savedSettings.lastWallpaperPath = path
         Quickshell.execDetached(["caelestia", "wallpaper", "-f", path])
         Qt.quit()
+    }
+
+    function restoreCurrent() {
+        if (wallpapers.count < 1) return
+
+        for (let i = 0; i < wallpapers.count; i++) {
+            if (wallpapers.get(i, "filePath") === savedSettings.lastWallpaperPath) {
+                gallery.currentIndex = i
+                return
+            }
+        }
+
+        if (gallery.currentIndex < 0 || gallery.currentIndex >= wallpapers.count)
+            gallery.currentIndex = Math.floor(wallpapers.count / 2)
+    }
+
+    function scrollByWheel(event): void {
+        const angle = event.angleDelta.y !== 0 ? event.angleDelta.y : event.angleDelta.x
+        const pixels = event.pixelDelta.y !== 0 ? event.pixelDelta.y : event.pixelDelta.x
+        const delta = angle !== 0 ? angle / 120 : pixels / 32
+        wheelRemainder += delta
+
+        const steps = Math.trunc(wheelRemainder)
+        if (steps !== 0 && gallery.count > 0) {
+            gallery.currentIndex = Math.max(0, Math.min(gallery.count - 1,
+                gallery.currentIndex - steps))
+            wheelRemainder -= steps
+        }
+        event.accepted = true
     }
 
     FolderListModel {
@@ -29,7 +67,18 @@ PanelWindow {
         showDirs: false
         nameFilters: ["*.png", "*.jpg", "*.jpeg", "*.webp", "*.PNG", "*.JPG", "*.JPEG", "*.WEBP"]
         sortField: FolderListModel.Name
+        onCountChanged: root.restoreCurrent()
     }
+
+    Item {
+        id: overlay
+        anchors.fill: parent
+
+        WheelHandler {
+            target: null
+            acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+            onWheel: event => root.scrollByWheel(event)
+        }
 
     Rectangle {
         anchors.fill: parent
@@ -39,6 +88,7 @@ PanelWindow {
             anchors.fill: parent
             onClicked: Qt.quit()
         }
+
     }
 
     Column {
@@ -72,13 +122,27 @@ PanelWindow {
             spacing: 18 * root.uiScale
             clip: true
             focus: true
-            currentIndex: Math.max(0, Math.floor(count / 2))
+            // Scrolling is handled by WheelHandler below so wheel input cannot
+            // move contentX independently from currentIndex and snap back.
+            interactive: false
+            currentIndex: -1
             leftMargin: Math.max(0, (width - 300 * root.uiScale) / 2)
             rightMargin: leftMargin
-            snapMode: ListView.SnapToItem
-            highlightRangeMode: ListView.StrictlyEnforceRange
-            preferredHighlightBegin: width / 2 - 150 * root.uiScale
-            preferredHighlightEnd: width / 2 + 150 * root.uiScale
+            snapMode: ListView.NoSnap
+            highlightRangeMode: ListView.NoHighlightRange
+            highlightMoveDuration: 0
+
+            Behavior on contentX {
+                NumberAnimation {
+                    duration: 240
+                    easing.type: Easing.OutCubic
+                }
+            }
+
+            onCurrentIndexChanged: {
+                if (currentIndex >= 0 && currentIndex < count)
+                    positionViewAtIndex(currentIndex, ListView.Center)
+            }
 
             delegate: Item {
                 id: tile
@@ -116,7 +180,6 @@ PanelWindow {
                 MouseArea {
                     anchors.fill: parent
                     hoverEnabled: true
-                    onEntered: gallery.currentIndex = index
                     onClicked: {
                         gallery.currentIndex = index
                         root.applyCurrent()
@@ -139,12 +202,6 @@ PanelWindow {
                 event.accepted = true
             }
 
-            WheelHandler {
-                onWheel: event => {
-                    gallery.currentIndex = Math.max(0, Math.min(gallery.count - 1,
-                        gallery.currentIndex + (event.angleDelta.y < 0 ? 1 : -1)))
-                }
-            }
         }
 
         Text {
@@ -153,5 +210,6 @@ PanelWindow {
             color: "#8d93a2"
             font.pixelSize: 13 * root.uiScale
         }
+    }
     }
 }
