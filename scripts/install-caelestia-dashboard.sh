@@ -123,7 +123,14 @@ def transform_calendar(text: str) -> str:
     }
 
 '''
-    text = replace_once(text, "    property bool ready: false\n", "    property bool ready: false\n" + holiday_data, "calendar holiday data")
+    # Caelestia 2.5.0 does not define `ready` in the upstream file;
+    # insert holiday loading after the stable animOpacity property instead.
+    text = replace_once(
+        text,
+        "    property real animOpacity: 1\n",
+        "    property real animOpacity: 1\n" + holiday_data,
+        "calendar holiday data",
+    )
     text = replace_once(
         text,
         "    property date currentDate: screenState.dashboardDate\n",
