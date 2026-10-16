@@ -32,11 +32,23 @@ import sys
 
 mode = os.environ["MODE"]
 home = Path.home()
-base = home / ".config/quickshell/caelestia/modules/dashboard"
-targets = {
-    Path("Dash.qml"): base / "Dash.qml",
-    Path("dash/Calendar.qml"): base / "dash/Calendar.qml",
-}
+relative_targets = (Path("Dash.qml"), Path("dash/Calendar.qml"))
+user_base = home / ".config/quickshell/caelestia/modules/dashboard"
+system_base = Path("/etc/xdg/quickshell/caelestia/modules/dashboard")
+
+# Prefer an existing user override. Otherwise support the system-wide layout
+# used by the Arch caelestia-shell package.
+if all((user_base / relative).is_file() for relative in relative_targets):
+    base = user_base
+    system_install = False
+elif all((system_base / relative).is_file() for relative in relative_targets):
+    base = system_base
+    system_install = True
+else:
+    base = user_base
+    system_install = False
+
+targets = {relative: base / relative for relative in relative_targets}
 
 def symlink_path(path: Path):
     if path.is_symlink():
@@ -269,7 +281,7 @@ for relative, destination in targets.items():
 
 missing = [path for path in targets.values() if not path.is_file()]
 if len(missing) == len(targets):
-    print("[SKIP] Caelestia Dashboard files are not installed; install Caelestia before applying this optional patch.")
+    print("[SKIP] Caelestia Dashboard files were not found in either the user config or /etc/xdg; install Caelestia before applying this optional patch.")
     sys.exit(0)
 if missing:
     sys.exit(f"ERROR: Expected Caelestia file is missing: {missing[0]}\nNo files were changed.")
@@ -285,7 +297,7 @@ if not changed:
     sys.exit(0)
 
 for relative in changed:
-    print(f"\n--- Proposed change for ~/.config/quickshell/caelestia/modules/dashboard/{relative} ---")
+    print(f"\n--- Proposed change for {targets[relative]} ---")
     print("".join(unified_diff(
         originals[relative].splitlines(True),
         proposed[relative].splitlines(True),
@@ -293,8 +305,13 @@ for relative in changed:
         tofile=f"repository/{relative}",
     )), end="")
 
-backup_root = home / ".config-backups/arch-install-home" / f"{datetime.now():%Y-%m-%d_%H-%M-%S}-{os.getpid()}" / "quickshell/caelestia/modules/dashboard"
+backup_suffix = "quickshell/caelestia/modules/dashboard"
+if system_install:
+    backup_suffix = "etc/xdg/quickshell/caelestia/modules/dashboard"
+backup_root = home / ".config-backups/arch-install-home" / f"{datetime.now():%Y-%m-%d_%H-%M-%S}-{os.getpid()}" / backup_suffix
 print(f"\nBackups will be saved under: {backup_root}")
+if system_install:
+    print("System package files will be updated using sudo and may be replaced by a future Caelestia package update.")
 if mode == "plan":
     print("Preview only. Run install.sh --apply or scripts/install-caelestia-dashboard.sh --apply to review and apply.")
     sys.exit(0)
@@ -309,10 +326,27 @@ for relative in changed:
     backup = backup_root / relative
     backup.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(destination, backup)
-    temporary = destination.with_name(destination.name + f".tmp-{os.getpid()}")
-    temporary.write_text(proposed[relative])
-    shutil.copystat(destination, temporary)
-    temporary.replace(destination)
+
+    if system_install:
+        # Stage the reviewed file in the user's backup directory, then use
+        # sudo install rather than changing ownership or permissions in /etc.
+        temporary = backup.parent / (destination.name + f".new-{os.getpid()}")
+        temporary.write_text(proposed[relative])
+        shutil.copystat(destination, temporary)
+        try:
+            import subprocess
+            subprocess.run(
+                ["sudo", "install", "-o", "root", "-g", "root", "-m", "0644", str(temporary), str(destination)],
+                check=True,
+            )
+        finally:
+            temporary.unlink(missing_ok=True)
+    else:
+        temporary = destination.with_name(destination.name + f".tmp-{os.getpid()}")
+        temporary.write_text(proposed[relative])
+        shutil.copystat(destination, temporary)
+        temporary.replace(destination)
+
     print(f"[BACKUP] {backup}")
     print(f"[DONE] {destination}")
 PY
