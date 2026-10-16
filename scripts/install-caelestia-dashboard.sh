@@ -123,12 +123,12 @@ def transform_calendar(text: str) -> str:
     }
 
 '''
-    # Caelestia 2.5.0 does not define `ready` in the upstream file;
-    # insert holiday loading after the stable animOpacity property instead.
+    # Keep holiday loading separate from animOpacity: the date helper is
+    # inserted after animOpacity later in this transform.
     text = replace_once(
         text,
-        "    property real animOpacity: 1\n",
-        "    property real animOpacity: 1\n" + holiday_data,
+        "    readonly property int animDirection: screenState.dashboardDate > currentDate ? -1 : 1\n",
+        "    readonly property int animDirection: screenState.dashboardDate > currentDate ? -1 : 1\n" + holiday_data,
         "calendar holiday data",
     )
     text = replace_once(
