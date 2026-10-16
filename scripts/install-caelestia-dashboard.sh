@@ -123,11 +123,21 @@ def transform_calendar(text: str) -> str:
     }
 
 '''
-    text = replace_once(text, "    property bool ready: false\n", "    property bool ready: false\n" + holiday_data, "calendar holiday data")
+    has_ready_property = "    property bool ready: false\n" in text
+    if holiday_data.strip() not in text:
+        holiday_anchors = (
+            "    property bool ready: false\n",
+            "    property real animOpacity: 1\n",
+        )
+        anchor = next((candidate for candidate in holiday_anchors if text.count(candidate) == 1), None)
+        if anchor is None:
+            sys.exit("ERROR: Caelestia calendar holiday data has an unexpected layout; no files were changed.")
+        text = text.replace(anchor, anchor + holiday_data, 1)
+    ready_state = "" if has_ready_property else "    property bool ready: false\n"
     text = replace_once(
         text,
         "    property date currentDate: screenState.dashboardDate\n",
-        "    property date currentDate: new Date()\n    property bool ready: false\n",
+        "    property date currentDate: new Date()\n" + ready_state,
         "calendar date state",
     )
     text = replace_once(
